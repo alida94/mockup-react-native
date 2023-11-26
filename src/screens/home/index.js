@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import {
   View,
@@ -5,16 +6,16 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  useWindowDimensions
+  useWindowDimensions,
 } from 'react-native';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import MapView, {Marker} from 'react-native-maps';
-import { List, SearchBar, Provider, Modal } from '@ant-design/react-native';
+import {List, SearchBar, Provider, Modal} from '@ant-design/react-native';
 import Text from '@components/Text';
 import useHook from './hook';
 import Icon from 'react-native-vector-icons/AntDesign';
 
-const Home = (props) => {
+const Home = props => {
   const {height, width} = useWindowDimensions();
   const h = useHook(props);
   const initialRegion = {
@@ -22,14 +23,14 @@ const Home = (props) => {
     longitude: 101.6984301,
     latitudeDelta: 0.0122,
     longitudeDelta: 0.0121,
-  }
+  };
 
-  const itemArr = (data, action) => (
+  const itemList = (data, action) => (
     <>
-      {data.map((item, key) => (
+      {data?.map((item, key) => (
         <List.Item key={key}>
           <TouchableOpacity
-            onPress={()=> action ? h.goTo(item) : null}
+            onPress={() => (action ? h.goTo(item) : null)}
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -40,16 +41,15 @@ const Home = (props) => {
         </List.Item>
       ))}
     </>
-  )
-  
+  );
+
   return (
     <Provider>
-      <SafeAreaView style={{ flex: 1 }}>
+      <SafeAreaView style={{flex: 1}}>
         <MapView
           ref={h.mapRef}
           style={StyleSheet.absoluteFillObject}
-          initialRegion={initialRegion}
-        >
+          initialRegion={initialRegion}>
           <Marker
             coordinate={{
               latitude: h.focusMarker?.latitude || initialRegion?.latitude,
@@ -58,29 +58,48 @@ const Home = (props) => {
             title={h.focusMarker?.subName || 'Maybank'}
           />
         </MapView>
-        <View style={{ position: 'absolute', top: 20, left: 20, right: 20, }}>
-          <View style={{ flex:1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#ececec', justifyContent: 'space-around'}}>
-            {(!h.openList) && (
-              <Icon name='clockcircleo' size={32} color='black' style={{marginLeft: 5}} onPress={()=> h.isVisible(true)} />
+        <View style={{position: 'absolute', top: 20, left: 20, right: 20}}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              alignItems: 'center',
+              backgroundColor: '#ececec',
+              justifyContent: 'space-around',
+            }}>
+            {!h.openList && (
+              <Icon
+                name="clockcircleo"
+                size={32}
+                color="black"
+                style={{marginLeft: 5}}
+                onPress={() => h.isVisible(true)}
+              />
             )}
-            <View style={{ flex:1}}>
+            <View style={{flex: 1}}>
               <SearchBar
                 value={h.searchKeyword}
                 placeholder="Search by"
-                onSubmit={(value) => h.setOpenList(false)}
-                onChange={(value) => {h.setSearchKeyword(value); h.setOpenList(true)}}
-                cancelText='Cancel'
-                onCancel={() => {h.setSearchKeyword(''); h.setOpenList(false)}}
+                onSubmit={value => h.setOpenList(false)}
+                onChange={value => {
+                  h.setSearchKeyword(value);
+                  h.setOpenList(true);
+                }}
+                cancelText="Cancel"
+                onCancel={() => {
+                  h.setSearchKeyword('');
+                  h.setOpenList(false);
+                }}
                 style={{
-                  height: 40
+                  height: 40,
                 }}
               />
             </View>
           </View>
-          {(!!h.openList) && (
-            <View style={{ height: 200, backgroundColor: 'white' }}>
+          {!!h.openList && (
+            <View style={{height: 200, backgroundColor: 'white'}}>
               <ScrollView>
-                <List>{itemArr(h.byFilter, true)}</List>
+                <List>{itemList(h.byFilter, true)}</List>
               </ScrollView>
             </View>
           )}
@@ -88,14 +107,13 @@ const Home = (props) => {
         <Modal
           title="History"
           transparent
-          onClose={()=> h.isVisible(false)}
+          onClose={() => h.isVisible(false)}
           maskClosable
           visible={h.visible}
-          closable
-          >
-          <View style={{height: height - 100 }}>
+          closable>
+          <View style={{height: height - 100}}>
             <ScrollView>
-              <List>{itemArr(h.history, false)}</List>
+              <List>{itemList(h.history, false)}</List>
             </ScrollView>
           </View>
         </Modal>
@@ -104,8 +122,8 @@ const Home = (props) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  history: state.history
+const mapStateToProps = state => ({
+  history: state.history,
 });
 
 export default connect(mapStateToProps)(Home);
